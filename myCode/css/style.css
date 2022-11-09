@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+body{
+    background-image: linear-gradient(to right,#0C164D,#190B23);
+}
+
 header{
     text-align: right;
     margin: 2rem 3rem;
@@ -13,12 +17,15 @@ header h1{
     font-family: 'Secular One', sans-serif;
     color: white;
     font-size: 4rem;
+    font-weight: 400;
 }
 
 header h3{
     font-family: 'Lora', serif;
     color: #FFD029;
     letter-spacing: 1rem;
+    font-weight: 400;
+
 }
 
 article:nth-child(1){
