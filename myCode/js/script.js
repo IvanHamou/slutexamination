@@ -1,3 +1,27 @@
+import { updatePage } from "./modules/updatePage.js"
+
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+import { getFirestore, addDoc, collection, deleteDoc, getDocs, doc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's Firebase configuration
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWE2tEpkckDrhxvw0r0Bj2KxC9oZRA7Lo",
+  authDomain: "solaris-bc040.firebaseapp.com",
+  projectId: "solaris-bc040",
+  storageBucket: "solaris-bc040.appspot.com",
+  messagingSenderId: "98304726415",
+  appId: "1:98304726415:web:c5a3b8bbe1e83bde62e7fa"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
 const body = document.querySelector("body")
 const main = document.querySelector("main")
 const header = document.querySelector("header")
@@ -5,36 +29,33 @@ const aside = document.querySelector("aside")
 const getInfo = document.querySelectorAll(".mainBeforeChanges article")
 
 //paste in the url
-const BASE_URL = 'https://fathomless-shelf-54969.herokuapp.com'
+const BASE_URL = 'https://my-json-server.typicode.com/zocom-christoffer-wallenberg/solaris-api'
         //fetch key
         async function getKey() {
-            const response = await fetch(`${BASE_URL}/keys`, { method: 'POST' })
+            const response = await fetch(`${BASE_URL}/keys`)
             const data = await response.json()
             return data.key
         }
         //function to remove and add content to the body of the page 
-        function updatePage(){
-            body.innerHTML = ""
-            header.innerHTML = ""
-            body.style.backgroundImage = "url('/slutexamination/myCode/img/stars.png'), linear-gradient(to right,#0C164D,#190B23)"
-            main.classList.remove("mainBeforeChanges")
-            main.classList.add("mainChanges")
-            aside.classList.add("aroundthesunone")
-            aside.classList.add("aroundthesuntwo")
-        }
-        //fetch bodies
+
+        //fetch bodies      a
         async function getPlanets() {
-            const key = await getKey()
+            //const key = await getKey()
 
-            const response = await fetch(`${BASE_URL}/bodies`, {
-                method: 'GET', 
-                headers: {
-                    'x-zocom': key
+            //const response = await fetch(`${BASE_URL}/bodies`, {
+                const response = await fetch("../js/data.json",{
+                method: 'GET'});
+                const data = await response.json()
+                //headers: {
+                //    'x-zocom': key
+//
+                //}
+            //})
 
-                }
-            })
-            const data = await response.json()
-            
+
+
+
+
             /*loop, eventListener and AdjacentHTML to generate 
             the correct information for each planet*/
             for (let i = 0; i < getInfo.length; i++) {
@@ -43,7 +64,7 @@ const BASE_URL = 'https://fathomless-shelf-54969.herokuapp.com'
                     updatePage()
                     getInfo[i].classList.remove("venus")
 
-                    codeToReplace = `
+                    const codeToReplace = `
                     <aside>
                         <section class = "sun"></section>
                         <section class = "aroundthesunone"></section>
@@ -79,6 +100,10 @@ const BASE_URL = 'https://fathomless-shelf-54969.herokuapp.com'
                             <h4>MÅNAR</h4>
                             <p class="moonsp">${data.bodies[i + 1].moons}</p>
                         </section> 
+                        <section class="theButtons">
+                        <button class="button1">Spara som favorit</button>
+                        <button class="button2">Ta bort som favorit</button>
+                        </section>
                     </main>
                     <footer><img src="/slutexamination/myCode/img/Zocom-logo-white 1.png" alt="ZoCom">`   
                     body.insertAdjacentHTML('beforeend', codeToReplace);
@@ -86,47 +111,88 @@ const BASE_URL = 'https://fathomless-shelf-54969.herokuapp.com'
                     /*declaring the aside design and change its color 
                     depending on which planet gets clicked */
                     const sun = document.querySelector(".sun")
-                    console.log(sun);
+                    const button1 = document.querySelector(".button1")
+                    const button2 = document.querySelector(".button2")
 
                     if (data.bodies[i].id == 0){
                         sun.style.backgroundColor = "#888888";
+                        button1.style.backgroundColor = "#888888";
                     }
                     else if (data.bodies[i].id == 1){
                         sun.style.backgroundColor = "#E7CDCD";
+                        button1.style.backgroundColor = "#E7CDCD";
                     }
                     else if (data.bodies[i].id == 2){
                         sun.style.backgroundColor = "#428ED4";
+                        button1.style.backgroundColor = "#428ED4";
                     }
                     else if (data.bodies[i].id == 3){
                         sun.style.backgroundColor = "#EF5F5F";
+                        button1.style.backgroundColor = "#EF5F5F";
                     }
                     else if (data.bodies[i].id == 4){
                         sun.style.backgroundColor = "#E29468";
+                        button1.style.backgroundColor = "#E29468";
                     }
                     else if (data.bodies[i].id == 5){
                         sun.style.backgroundColor = "#C7AA72";
+                        button1.style.backgroundColor = "#C7AA72";
                     }
                     else if (data.bodies[i].id == 6){
                         sun.style.backgroundColor = "#C9D4F1";
+                        button1.style.backgroundColor = "#C9D4F1";
                     }
                     else {
                         sun.style.backgroundColor = "#7A91A7";
+                        button1.style.backgroundColor = "#7A91A7";
                     }
 
+                       
+                         
+                         
+                       
+                        button1.addEventListener("click", removeEvent)
 
+                        function removeEvent() {
+                            let clicks = false
+                            let selectedPlanet = data.bodies[i + 1].name
+                            saveToDatabase(selectedPlanet)
+                            getAllPlanets()
+                            button1.innerText="Planeten har sparats som favorit!"
+                            clicks = true 
+                            if (clicks = true ) {
+                                button1.removeEventListener("click", removeEvent)
+                            }
+                            console.log(clicks);
+                        }
+                    
+                    
+                     
+                    button2.addEventListener("click", () => {
+                    
+                        let selectedPlanet = data.bodies[i + 1].name
+                        removeFromDatabase(selectedPlanet)
+                        button2.innerText="Planeten har tagits bort som favorit!"
+                        //removeFromDatabase()
+                        getAllPlanets()
+                        button1.addEventListener("click", removeEvent)
+                        })
+                    
+                    
                 })
+                               
             }   
         
             /*loop, eventListener and AdjacentHTML to generate 
             the correct information for the sun*/
             const sun = document.querySelector(".sun")
-            console.log(sun);
+            
 
                 sun.addEventListener(`click`, () => {
 
 
                     updatePage()
-                    codeToReplace = `
+                    const codeToReplace = `
                     <aside>
                     <section class = "sun"></section>
                     <section class = "aroundthesunone"></section>
@@ -162,17 +228,70 @@ const BASE_URL = 'https://fathomless-shelf-54969.herokuapp.com'
                     <h4>MÅNAR</h4>
                     <p class="moonsp">${data.bodies[0].moons}</p>
                 </section> 
+                <section class="theButtons">
+                <button class="button1">Spara som favorit</button>
+                <button class="button2">Ta bort som favorit</button>
+                </section>
                 </main>
                 <footer><img src="/slutexamination/myCode/img/Zocom-logo-white 1.png" alt="ZoCom">`   
                 body.insertAdjacentHTML('beforeend', codeToReplace);
-                })
-            
 
+                const button1 = document.querySelector(".button1")
+                const button2 = document.querySelector(".button2")
+                button1.style.backgroundColor = "#FFD029";
+
+                button1.addEventListener("click", () => {
+
+                    let selectedPlanet = data.bodies[0].name
+                    saveToDatabase(selectedPlanet)
+                    button1.innerText="Solen har sparats som favorit!"
+
+                })
+
+                button2.addEventListener("click", () => {
+                    
+                    //let selectedPlanet = data.bodies[i + 1].name
+                    //saveToDatabase(selectedPlanet)
+                    button2.innerText="Planeten har sparats som favorit!"
+
+                })
+
+            })
+            console.log(getAllPlanets());
+                
         }   
 
-        getKey()
+        //getKey()
         getPlanets();
 
+        let planetID
+        async function saveToDatabase(selectedPlanet) {
+            await addDoc(collection(db, 'Planets'), {  
+                selectedPlanet
+            });   
+            
+        }
+
+        async function removeFromDatabase() {
+            
+            console.log(planetID);
+            await deleteDoc(doc(db, "Planets", planetID))// where("selectedPlanet", "==", ""))
+
+        }
+
+        async function getAllPlanets() {
+            const selected = await getDocs(collection(db, 'Planets'));  
+             
+            selected.forEach(planet => {
+                console.log(planet.data()); 
+                planetID = planet.id 
+                
+            });    
+            
+            //click()
+        }
+
+        //getAllPlanets()
 
 
 
